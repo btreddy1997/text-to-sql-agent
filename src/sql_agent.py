@@ -3,6 +3,7 @@ import re
 import json
 import anthropic
 from dotenv import load_dotenv
+from vector_store import find_similar
 
 load_dotenv()
 
@@ -27,12 +28,22 @@ def generate_sql(question, schema):
     config = load_config()
     client = get_client()
 
+    # RAG — find similar proven examples from ChromaDB
+    similar_examples = find_similar(question, n_results=2)
+
+    # Build examples text if any found
+    examples_text = ""
+    if similar_examples:
+        examples_text = "\n\nHere are similar questions with correct SQL for reference:\n"
+        for ex in similar_examples:
+            examples_text += f"\nQuestion: {ex['question']}\nSQL: {ex['sql']}\n"
+
     system_prompt = f"""You are an expert SQL assistant working with a SQLite database.
 
 Here is the exact database schema:
 
 {schema}
-
+{examples_text}
 Rules you must follow:
 - Return ONLY a valid SQL query, nothing else
 - No explanations, no markdown, no ```sql fences
