@@ -2,3 +2,4 @@
 __pycache__/
 *.pyc
 src/amazon_store.db
+chromadb_store/
