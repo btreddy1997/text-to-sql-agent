@@ -34,12 +34,19 @@ Here is the exact database schema:
 {schema}
 
 Rules you must follow:
-- Return ONLY the SQL query, nothing else
+- Return ONLY a valid SQL query, nothing else
 - No explanations, no markdown, no ```sql fences
 - Use only the table names and column names shown in the schema above
+- Always give calculated columns a clean alias:
+  SUM(o.total_amount) AS total_revenue
+  COUNT(o.order_id)   AS order_count
+  ROUND(x, 2)         AS clean_name
 - For revenue calculations always exclude cancelled orders (status != 'cancelled')
 - Use ROUND(value, 2) for all decimal numbers
 - Always use table aliases (o for orders, c for customers, p for products)
+- If no limit is specified for ranking questions, always use LIMIT 10
+- If the question cannot be answered from the database schema above,
+  return exactly this and nothing else: SELECT 'out_of_scope' AS result
 """
 
     response = client.messages.create(

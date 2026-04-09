@@ -18,6 +18,17 @@ def run_pipeline(question, schema, db_path):
     sql = generate_sql(question, schema)
     print(f"\nSQL:\n{sql}")
 
+    # Guard clause — check if Claude returned out of scope
+    if "out_of_scope" in sql.lower():
+        print("\nSorry, I can only answer questions about customers, products and orders.")
+        return
+
+    # Guard clause — check if SQL starts with SELECT
+    if not sql.strip().upper().startswith("SELECT"):
+        print("\nSorry, I could not generate a valid query for that question.")
+        print("Try rephrasing or ask something about customers, products or orders.")
+        return
+
     print("\nRunning query...")
     results = execute_query(db_path, sql)
 
